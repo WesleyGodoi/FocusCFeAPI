@@ -130,3 +130,5 @@ C:\Projetos\FocusCFeAPI\FocusCFeAPI\obj\Debug\FocusCFe.D0F5746C.Up2Date
 C:\Projetos\FocusCFeAPI\FocusCFeAPI\obj\Debug\FocusCFeAPI.exe
 C:\Projetos\FocusCFeAPI\FocusCFeAPI\obj\Debug\FocusCFeAPI.pdb
 C:\Projetos\FocusCFeAPI\FocusCFeAPI\obj\Debug\FocusCFeAPI.Form1.resources
+C:\Projetos\FocusCFeAPI\FocusCFeAPI\bin\Debug\RestSharp.dll
+C:\Projetos\FocusCFeAPI\FocusCFeAPI\bin\Debug\RestSharp.xml

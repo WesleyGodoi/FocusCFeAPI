@@ -8,45 +8,128 @@ using FocusCFeMFeApi.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using RestSharp;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace FocusCFeMFeApi
 {
     public class CFeMFe : ICFeMFe 
     {
-        public CFeModel DadosCfe { get; set; }
+        public CFeModel DadosCfe { get; set; } = new CFeModel();
 
-        public CFeMFe()
+        public void EmitirCFe(CFeModel cfeMfe)
         {
-            DadosCfe = new CFeModel
+            var client = new RestClient($"http://localhost:5555/v2/fiscal/sat?ref={cfeMfe.Id}");
+            var request = new RestRequest();
+            request.Method = Method.Post;
+            request.AddJsonBody(JsonConvert.SerializeObject(cfeMfe));
+
+            try
             {
-                Itens = new List<ItemModel>(),
-                Destinatario = new DadosDestinatarioModel(),
-                FormasPagamento = new List<FormaPagamentoModel>()
+                var response = client.Execute(request);
+
+                if (response.ResponseStatus == ResponseStatus.Completed)
+                {
+                    //Deserializa o objeto recebido utilizando a classe que se espera receber
+                    var dadosEsperados = JsonConvert.DeserializeObject<ResponseGenericos>(response.Content);
+                }
+                else
+                {
+                    throw new Exception("Falha no Request");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("Erro durante o processo de envio do CFe nº{0}. ", cfeMfe.Id.ToString(), e.Message);
+            }
+        }
+
+        public static void CancelarCFe(int idCfeMfe, string justificativa)
+        {
+            var client = new RestClient($"http://localhost:5555/v2/fiscal/sat?ref={idCfeMfe}");
+            var request = new RestRequest
+            {
+                Method = Method.Delete
             };
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            request.AddJsonBody(JsonConvert.SerializeObject("justificativa: " + justificativa));
+
+            try
+            {
+                var response = client.Execute(request);
+
+                if (response.ResponseStatus == ResponseStatus.Completed)
+                {
+                    //Deserializa o objeto recebido utilizando a classe que se espera receber
+                    var dadosEsperados = JsonConvert.DeserializeObject<ResponseGenericos>(response.Content);
+                }
+                else
+                {
+                    throw new Exception("Falha no Request");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("Erro durante o processo de cancelamento do CFe nº{0}. ", idCfeMfe.ToString(), e.Message);
+            }
         }
 
-        public async void EmitirCFe(CFeModel cfeMfe)
+        public static void ConsultarCFe(int idCfeMfe)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri($"http://localhost:5555/v2/fiscal/sat?ref={cfeMfe.Id}");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var client = new RestClient($"http://localhost:5555/v2/fiscal/sat/cfe/{idCfeMfe}");
+            var request = new RestRequest
+            {
+                Method = Method.Get
+            };
 
+            try
+            {
+                var response = client.Execute(request);
+
+                if (response.ResponseStatus == ResponseStatus.Completed)
+                {
+                    //Deserializa o objeto recebido utilizando a classe que se espera receber
+                    var dadosEsperados = JsonConvert.DeserializeObject<ResponseGenericos>(response.Content);
+                }
+                else
+                {
+                    throw new Exception("Falha no Request");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("Erro durante o processo de consulta do CFe nº{0}. ", idCfeMfe.ToString(), e.Message);
+            }
         }
 
-        public void CancelarCFe(CFeModel cfeMfe)
+        public void ConsultarStatusMFe()
         {
-            throw new NotImplementedException();
-        }
+            var client = new RestClient("http://localhost:PORTA/v2/fiscal/sat/status");
+            var request = new RestRequest
+            {
+                Method = Method.Get
+            };
 
-        public void ConsultarCFe(CFeModel cfeMfe)
-        {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var response = client.Execute(request);
 
-        public void ConsultarStatusMFe(CFeModel cfeMfe)
-        {
-            throw new NotImplementedException();
+                if (response.ResponseStatus == ResponseStatus.Completed)
+                {
+                    //Deserializa o objeto recebido utilizando a classe que se espera receber
+                    var dadosEsperados = JsonConvert.DeserializeObject<ResponseGenericos>(response.Content);
+                }
+                else
+                {
+                    throw new Exception("Falha no Request");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("Erro durante o processo de consulta de status. ", e.Message);
+            }
         }
         
     }

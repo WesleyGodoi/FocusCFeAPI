@@ -26,16 +26,18 @@ namespace FocusCFeAPI
         {
             var cfe = new CFeMFe();
             cfe.DadosCfe.Id = 10;
-            cfe.DadosCfe.Destinatario.NomeDestinatario = "teste";
-            cfe.DadosCfe.Destinatario.CpfDestinatario = "73555764020";
+            cfe.DadosCfe.NomeDestinatario = "teste";
+            cfe.DadosCfe.CpfDestinatario = "73555764020";
             cfe.DadosCfe.Itens.Add(new ItemModel()
             {
+                NumeroItem = 1,
                 CodigoNcm = "21069090",
                 CodigoProduto = "A01",
                 Descricao = "prod01",
-                Quantidade = 1,
+                QuantidadeComercial = 1,
+                QuantidadeTributavel = 1,
                 Cfop = "5102",
-                ValorUnitario = 10,
+                ValorUnitarioComercial = 10,
                 ValorBruto = 10,
                 UnidadeComercial = "UN",
                 IcmsSituacaoTributaria = "40"
@@ -47,6 +49,22 @@ namespace FocusCFeAPI
                 NomeCredenciadora = "SICREDI"
             });
             cfe.EmitirCFe(cfe.DadosCfe);
+        }
+
+        private void CancelarCFe_click(object sender, EventArgs e)
+        {
+            string justificativa = "Sua justificativa aqui com, no minimo, 15 caracteres";
+            CFeMFe.CancelarCFe(10, justificativa);
+        }
+
+        private void ConsultarCfe_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ConstultarNFeSat_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
